@@ -1,0 +1,58 @@
+# rules_proto replacement 
+
+# Option 1: Use Bazel's url rewriter
+
+This is same as `Option 2` but works with for both WORKSPACE and MODULE.bazel with a single configuration.
+
+```
+rewrite http://github.com/bazelbuild/rules_proto/(.*) https://github.com/thesayyn/rules_proto/$1
+```
+
+
+# Option 2: Use version_override
+
+This is essentially a `archive_override` in MODULE.bazel that looks like 
+
+```
+archive_override(
+    module_name = "rules_proto",
+    urls = ["https://github.com/thesayyn/rules_proto/archive/refs/heads/main.zip"],
+    strip_prefix = "rules_proto-main",
+)
+```
+
+and a `http_archive` early in the WORKSPACE
+
+```
+http_archive(
+    module_name = "rules_proto",
+    urls = ["https://github.com/thesayyn/rules_proto/archive/refs/heads/main.zip"],
+    strip_prefix = "rules_proto-main",
+)
+```
+
+## Upsides
+- Does not need a custom registry, it works with a fork of rules_proto
+
+## Downsides
+
+- This will work as long as we don't need to modify MODULE.bazel as the MODULE.bazel from the BCR registry is still the source of truth. 
+- Little verbose
+
+# Option 3: Use version_override with custom registry
+
+## Upsides
+
+- Can change `MODULE.bazel` as we like
+- Can publish a module with rules_proto name, with no political games.
+
+## Downsides
+
+- Needs a fork of bazel-central-registry
+
+```
+single_version_override(
+    module_name = "rules_proto",
+    registry = "https://raw.github.com/buf/bazel-central-registry"
+)
+```

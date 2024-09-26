@@ -1,0 +1,22 @@
+""
+bazel_dep(name = "protobuf", version = "3.19.6")
+bazel_dep(name = "rules_go", version = "0.50.1")
+bazel_dep(name = "gazelle", version = "0.33.0")
+bazel_dep(name = "rules_proto", version = "6.0.2")
+
+archive_override(
+    module_name = "rules_proto",
+    urls = ["https://github.com/thesayyn/rules_proto/archive/refs/heads/main.zip"],
+    # urls = ["https://github.com/thesayyn/rules_proto/refs/main.tar.gz"],
+    # integrity = "sha256-DQTeIWARicbjC2raummCxe+f4bIfMahH1vg1eVDOzo0=",
+    strip_prefix = "rules_proto-main",
+)
+
+
+go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
+go_deps.module(
+    path = "google.golang.org/grpc",
+    sum = "h1:pnP7OclFFFgFi4VHQDQDaoXUVauOFyktqTsqqgzFKbc=",
+    version = "v1.40.1",
+)
+use_repo(go_deps, "org_golang_google_grpc")
